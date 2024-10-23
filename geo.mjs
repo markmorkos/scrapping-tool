@@ -457,14 +457,16 @@ async function processCodes(page, codes) {
           const hasF = await page.evaluate(() => {
             const items = document.querySelectorAll('[headers="classamento"]');
             console.log(`Found classamento elements: ${items.length}`);
-
-            if(items.length > 2) {
+            if (items.length > 2) {
               for (let item of items) {
                 console.log(`Checking element: ${item.innerText}`);
                 if (item.innerText.includes("F") || item.innerText.includes("A")) {
-                  return true;
+                  number ++;
                 }
               }
+            }
+            if(number > 2) {
+              return true;
             }
             return false;
           });
@@ -578,14 +580,16 @@ async function processCodes(page, codes) {
                   const hasFA = await page.evaluate(() => {
                     const items = document.querySelectorAll('[headers="classamento"]');
                     console.log(`Found 'classamento' elements: ${items.length}`);
-          
                     if (items.length > 2) {
                       for (let item of items) {
                         console.log(`Checking element: ${item.innerText}`);
                         if (item.innerText.includes("F") || item.innerText.includes("A")) {
-                          return true;
+                          number ++;
                         }
                       }
+                    }
+                    if(number > 2) {
+                      return true;
                     }
                     return false;
                   });
@@ -630,15 +634,19 @@ async function processCodes(page, codes) {
                 // Perform the check for 'classamento' including 'F' or 'A'
                 const hasFA = await page.evaluate(() => {
                   const items = document.querySelectorAll('[headers="classamento"]');
+                  let number = 0;
                   console.log(`Found 'classamento' elements: ${items.length}`);
           
                   if (items.length > 2) {
                     for (let item of items) {
                       console.log(`Checking element: ${item.innerText}`);
                       if (item.innerText.includes("F") || item.innerText.includes("A")) {
-                        return true;
+                        number ++;
                       }
                     }
+                  }
+                  if(number > 2) {
+                    return true;
                   }
                   return false;
                 });
