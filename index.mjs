@@ -19,7 +19,7 @@ async function fetchData(url) {
   try {
     console.log(`Открываем браузер для URL: ${url}`);
     const browser = await puppeteer.launch({
-      executablePath: process.env.CHROME_BIN || '/app/.heroku/google-chrome',
+      executablePath: process.env.CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome',
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
