@@ -726,7 +726,7 @@ async function loginToGeoweb() {
   try {
     console.log(`Launching browser for URL: ${LOGIN_URL}`);
     browser = await puppeteerExtra.launch({
-      executablePath: '/usr/bin/chromium-browser',
+      executablePath: process.env.CHROME_BIN || '/app/.apt/usr/bin/google-chrome-stable',
       headless: false, // Set to true to run in headless mode
       args: [
         "--no-sandbox",
