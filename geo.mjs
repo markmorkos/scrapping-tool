@@ -1,10 +1,12 @@
 import puppeteer from "puppeteer-core";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { addExtra } from 'puppeteer-extra';
 import fs from "fs";
 import { google } from "googleapis";
 
+const puppeteerExtra = addExtra(puppeteer);
 // Add the stealth plugin to puppeteer
-puppeteer.use(StealthPlugin());
+puppeteerExtra.use(StealthPlugin());
 
 // Constants and configurations
 const LOGIN_URL = "https://www.geoweb.it/2fa/login.aspx";
@@ -723,7 +725,8 @@ async function loginToGeoweb() {
   let browser;
   try {
     console.log(`Launching browser for URL: ${LOGIN_URL}`);
-    browser = await puppeteer.launch({
+    browser = await puppeteerExtra.launch({
+      executablePath: '/usr/bin/chromium-browser',
       headless: false, // Set to true to run in headless mode
       args: [
         "--no-sandbox",

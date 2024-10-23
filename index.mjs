@@ -19,6 +19,7 @@ async function fetchData(url) {
   try {
     console.log(`Открываем браузер для URL: ${url}`);
     const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser',
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
