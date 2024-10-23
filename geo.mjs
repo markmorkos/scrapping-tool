@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import fs from "fs";
+import { google } from "googleapis";
 
 // Add the stealth plugin to puppeteer
 puppeteer.use(StealthPlugin());
@@ -12,8 +13,11 @@ const CODE_CHECK_URL =
 const COOKIES_PATH = "cookies.json"; // Path for saving cookies
 const CODES_PATH = "partita_iva.json"; // Path to JSON file with codes
 const RESULTS_PATH = "results.json"; // Path to save the results
-const USERNAME = "Studiostaart"; // Replace with your username
-const PASSWORD = "3350Geometra28!"; // Replace with your password
+const USERNAME = process.env.USERNAME; // Replace with your username
+const PASSWORD = process.env.PASSWORD; // Replace with your password
+const SPREADSHEET_ID = "1Xf0yqjGSbdU-xbY2fKMGk8i9Of3naCHB740_CiCVAKk"; // Replace with your Spreadsheet ID
+const SHEET_NAME = "Sheet1"; // Replace with your sheet name if different
+
 
 // Delay helper function
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -44,6 +48,39 @@ function loadCodes() {
   } else {
     console.error("Codes file not found.");
     return [];
+  }
+}
+
+async function authenticateGoogle() {
+  const credentials = JSON.parse(
+    Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS, "base64").toString("utf8")
+  );
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  const authClient = await auth.getClient();
+  return authClient;
+}
+
+
+// Function to append data to Google Sheets
+async function appendToSheet(authClient, data) {
+  const sheets = google.sheets({ version: "v4", auth: authClient });
+  const resource = {
+    values: data,
+  };
+  try {
+    const result = await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${SHEET_NAME}!A1`, // Adjust the range as needed
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource,
+    });
+    console.log("Data appended to Google Sheets.");
+  } catch (err) {
+    console.error("Error appending data to Google Sheets:", err);
   }
 }
 
@@ -714,6 +751,16 @@ async function loginToGeoweb() {
 
     console.log("Process completed.");
     console.log("Results:", results);
+
+    // Authenticate with Google Sheets
+    const authClient = await authenticateGoogle();
+
+    // Prepare data for Google Sheets (convert results to a 2D array)
+    // Assuming results is an array of codes or false values
+    const dataToAppend = results.map((result) => [result || "No Match"]);
+
+    // Append results to Google Sheets
+    await appendToSheet(authClient, dataToAppend);
 
     // Save results to a JSON file
     fs.writeFileSync(
