@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "Starting index.js"
-node index.js
+echo "Starting index.mjs"
+node index.mjs
 
-echo "index.js finished, starting geo.js"
-node geo.js
+echo "index.mjs finished, starting geo.mjs"
+node geo.mjs
 
 echo "All tasks completed."
