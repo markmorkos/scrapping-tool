@@ -713,7 +713,7 @@ async function processCodes(page, codes) {
     } catch (error) {
       console.error("An error occurred while processing the code:", error);
       // Click on the user collapse button as in your original code
-      await page.click("#user-collapse .btn");
+      await page.click("#user-collapse .btn"); 
     }
   }
 
