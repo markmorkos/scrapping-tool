@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer-extra";
+import puppeteer from "puppeteer-core";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import fs from "fs";
 import { google } from "googleapis";
