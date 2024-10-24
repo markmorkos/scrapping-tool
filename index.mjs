@@ -1,6 +1,12 @@
 import puppeteer from "puppeteer-core";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { addExtra } from 'puppeteer-extra';
 import * as cheerio from "cheerio";
 import fs from "fs";
+
+const puppeteerExtra = addExtra(puppeteer);
+// Add the stealth plugin to puppeteer
+puppeteerExtra.use(StealthPlugin());
 
 const mainUrl = "https://portalecreditori.it/procedure.php?altre=fallimenti&order=data&verso=desc";
 let partitaIvaList = [];
@@ -18,7 +24,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function fetchData(url) {
   try {
     console.log(`Открываем браузер для URL: ${url}`);
-    const browser = await puppeteer.launch({
+    const browser = await puppeteerExtra.launch({
       executablePath: process.env.CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome',
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
