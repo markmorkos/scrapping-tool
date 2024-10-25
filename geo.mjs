@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { addExtra } from 'puppeteer-extra';
 import fs from "fs";
@@ -15,8 +15,8 @@ const CODE_CHECK_URL =
 const COOKIES_PATH = "cookies.json"; // Path for saving cookies
 const CODES_PATH = "partita_iva.json"; // Path to JSON file with codes
 const RESULTS_PATH = "results.json"; // Path to save the results
-const USERNAME = process.env.USERNAME; // Replace with your username
-const PASSWORD = process.env.PASSWORD; // Replace with your password
+const USERNAME = "Studiostaart"; // Replace with your username
+const PASSWORD = "3350Geometra28!"; // Replace with your password
 const SPREADSHEET_ID = "1Xf0yqjGSbdU-xbY2fKMGk8i9Of3naCHB740_CiCVAKk"; // Replace with your Spreadsheet ID
 const SHEET_NAME = "Sheet1"; // Replace with your sheet name if different
 
@@ -721,24 +721,16 @@ async function processCodes(page, codes) {
 }
 
 // Main function to run the script
-async function loginToGeoweb() {
+export async function loginToGeoweb() {
   let browser;
   try {
     console.log(`Launching browser for URL: ${LOGIN_URL}`);
     const browser = await puppeteerExtra.launch({
-      executablePath: process.env.CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome',
+      // executablePath: process.env.CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome',
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
     const page = await browser.newPage();
-
-    await page.setExtraHTTPHeaders({
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-      "Accept-Language": "en-US,en;q=0.9",
-      "Accept-Encoding": "gzip, deflate, br",
-      Connection: "keep-alive",
-    });
 
     await authenticate(page);
     await navigateToCatasto(page);
@@ -798,5 +790,3 @@ async function loginToGeoweb() {
   }
 }
 
-// Execute the main function
-loginToGeoweb();
