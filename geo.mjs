@@ -16,12 +16,13 @@ const LOGIN_URL = "https://www.geoweb.it/2fa/login.aspx";
 const CODE_CHECK_URL =
   "https://sister.agenziaentrate.gov.it/Visure/Informativa.do?tipo=/T/TM/VCVC_";
 const COOKIES_PATH = "cookies.json"; // Path for saving cookies
-const CODES_PATH = "partita_iva.json"; // Path to JSON file with codes
 const RESULTS_PATH = "results.json"; // Path to save the results
 const USERNAME = process.env.USERNAME; 
 const PASSWORD = process.env.PASSWORD; 
 const SPREADSHEET_ID = "1Xf0yqjGSbdU-xbY2fKMGk8i9Of3naCHB740_CiCVAKk"; 
 const SHEET_NAME = "Sheet1"; 
+
+const CODES_PATH = path.join('/home/ec2-user', 'partita_iva.json');
 
 // Delay helper function
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -758,7 +759,6 @@ export async function loginToGeoweb() {
       // Click on the user collapse button as in your original code
       await page.click("#user-collapse .btn");
     }
-    results.push('0000');
     console.log("Process completed.");
     console.log("Results:", results);
 

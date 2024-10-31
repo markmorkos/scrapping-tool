@@ -3,20 +3,39 @@ import puppeteer from "puppeteer";
 // import { addExtra } from 'puppeteer-extra';
 import * as cheerio from "cheerio";
 import fs from "fs";
-import * as geo from "./geo.mjs"
+import * as geo from "./geo.mjs";
+import path from "path"; // Importing path
 
-// const puppeteerExtra = addExtra(puppeteer);
-// Add the stealth plugin to puppeteer
-// puppeteerExtra.use(StealthPlugin());
+// Path to the log file
+const LOG_FILE_PATH = path.join(__dirname, 'app.log');
+
+// Function to log messages to a file
+function logToFile(message) {
+  const timestamp = new Date().toISOString(); // Formatting date and time
+  fs.appendFileSync(LOG_FILE_PATH, `${timestamp} - ${message}\n`, 'utf8');
+}
+
+// Overriding console.log and console.error
+console.log = (...args) => {
+  const message = args.join(' ');
+  logToFile(message); // Logging to file
+  process.stdout.write(`${message}\n`); // Output to console
+};
+
+console.error = (...args) => {
+  const message = args.join(' ');
+  logToFile(message); // Logging to file
+  process.stderr.write(`${message}\n`); // Output to console
+};
 
 const mainUrl = "https://portalecreditori.it/procedure.php?altre=fallimenti&order=data&verso=desc";
 let partitaIvaList = [];
 
-// Функция для записи массива Partita Iva в JSON файл
+// Function to save the Partita Iva array to a JSON file
 function saveToJsonFile() {
   fs.writeFileSync("partita_iva.json", JSON.stringify(partitaIvaList, null, 2), (err) => {
     if (err) throw err;
-    console.log("Partita Iva данные сохранены в файл JSON");
+    console.log("Partita Iva data saved to JSON file");
   });
 }
 
@@ -24,7 +43,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function fetchData(url) {
   try {
-    console.log(`Открываем браузер для URL: ${url}`);
+    console.log(`Opening browser for URL: ${url}`);
     const browser = await puppeteer.launch({
       // executablePath: process.env.CHROME_BIN || '/app/.chrome-for-testing/chrome-linux64/chrome',
       headless: true,
@@ -40,70 +59,66 @@ async function fetchData(url) {
       Connection: "keep-alive",
     });
 
-    console.log(`Переходим на страницу: ${url}`);
+    console.log(`Navigating to page: ${url}`);
     await page.goto(url, { waitUntil: "domcontentloaded" });
 
-    console.log(`Загружаем контент страницы: ${url}`);
+    console.log(`Loading page content: ${url}`);
     const content = await page.content();
 
-    console.log(`Закрываем браузер для URL: ${url}`);
+    console.log(`Closing browser for URL: ${url}`);
     await browser.close();
 
-    console.log(`Контент страницы загружен для URL: ${url}`);
+    console.log(`Page content loaded for URL: ${url}`);
     return cheerio.load(content);
   } catch (error) {
-    console.error(`Ошибка при запросе ${url}:`, error);
+    console.error(`Error fetching ${url}:`, error);
   }
 }
 
 async function parseMainPage() {
-  console.log("Начинаем парсинг главной страницы...");
+  console.log("Starting to parse the main page...");
   const links = [];
-  console.log("Ищем все ссылки...");
+  console.log("Searching for all links...");
 
-  for(let i = 1; i < 2; i++) {
-    const $ = await fetchData(mainUrl+'&page='+i);
+  for (let i = 1; i < 2; i++) {
+    const $ = await fetchData(mainUrl + '&page=' + i);
 
     if (!$) {
-      console.error("Не удалось загрузить страницу" + i);
+      console.error("Failed to load page " + i);
       return;
     }
     $("a").each((index, element) => {
       const href = $(element).attr("href");
       if (href && href.includes("procedura")) {
-        console.log(`Найдена ссылка: ${href}`);
+        console.log(`Found link: ${href}`);
         links.push(href);
       }
     });
   }
-  
-
-  
 
   if (links.length === 0) {
-    console.log("Ссылки на страницы компаний не найдены.");
+    console.log("No links to company pages found.");
     return;
   }
 
-  console.log(`Найдено ${links.length} ссылок. Начинаем парсинг страниц компаний...`);
+  console.log(`Found ${links.length} links. Starting to parse company pages...`);
 
   for (const link of links) {
     const fullLink = `https://portalecreditori.it${link}`;
-    console.log(`Переходим по ссылке: ${fullLink}`);
+    console.log(`Navigating to link: ${fullLink}`);
     await parseCompanyPage(fullLink);
   }
 
-  // Сохранение всех собранных данных в JSON файл
   saveToJsonFile();
   geo.loginToGeoweb();
 }
 
 async function parseCompanyPage(url) {
-  console.log(`Начинаем парсинг страницы компании: ${url}`);
+  console.log(`Starting to parse company page: ${url}`);
   const $ = await fetchData(url);
 
   if (!$) {
-    console.error(`Не удалось загрузить страницу компании: ${url}`);
+    console.error(`Failed to load company page: ${url}`);
     return;
   }
 
@@ -112,14 +127,12 @@ async function parseCompanyPage(url) {
     .match(/Partita Iva:\s*([\d]+)/);
   if (partitaIva) {
     const iva = partitaIva[1];
-    console.log(`Partita Iva: ${iva} на странице ${url}`);
+    console.log(`Partita Iva: ${iva} on page ${url}`);
 
-    // Добавляем найденный Partita Iva в массив
     partitaIvaList.push({ url, partitaIva: iva });
   } else {
-    console.log(`Partita Iva не найдена на странице ${url}`);
+    console.log(`Partita Iva not found on page ${url}`);
   }
 }
 
 parseMainPage();
-
