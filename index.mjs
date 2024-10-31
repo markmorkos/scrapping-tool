@@ -121,11 +121,9 @@ async function parseCompanyPage(url) {
   }
 
   const partitaIvaMatch = $("body").text().match(/Partita Iva:\s*([\d]+)/);
-  const companyNameMatch = $("body").html().match(/Ragione sociale:\s*([^<]*)/);
-
   if (partitaIvaMatch) {
     const iva = partitaIvaMatch[1];
-    const companyName = companyNameMatch ? companyNameMatch[1].trim() : "Unknown";
+    const companyName = $("th:contains('Ragione sociale:')").next("td").text().trim();
 
     console.log(`Partita Iva: ${iva} (Company: ${companyName}) on page ${url}`);
 
