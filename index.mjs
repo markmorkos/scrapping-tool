@@ -121,7 +121,7 @@ async function parseCompanyPage(url) {
   }
 
   const partitaIvaMatch = $("body").text().match(/Partita Iva:\s*([\d]+)/);
-  const companyNameMatch = $("body").text().match(/Ragione sociale:\s*([^]*)/);
+  const companyNameMatch = $("body").html().match(/Ragione sociale:\s*([^<]*)/);
 
   if (partitaIvaMatch) {
     const iva = partitaIvaMatch[1];
