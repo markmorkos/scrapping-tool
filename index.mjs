@@ -58,7 +58,7 @@ async function fetchData(url) {
       "Accept-Encoding": "gzip, deflate, br",
       Connection: "keep-alive",
     });
-
+    logToFile(Date.now());
     console.log(`Navigating to page: ${url}`);
     await page.goto(url, { waitUntil: "domcontentloaded" });
 
