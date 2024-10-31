@@ -1,8 +1,11 @@
 import puppeteer from "puppeteer";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import dotenv from 'dotenv';
 import { addExtra } from 'puppeteer-extra';
 import fs from "fs";
 import { google } from "googleapis";
+
+dotenv.config();
 
 const puppeteerExtra = addExtra(puppeteer);
 // Add the stealth plugin to puppeteer
@@ -15,11 +18,10 @@ const CODE_CHECK_URL =
 const COOKIES_PATH = "cookies.json"; // Path for saving cookies
 const CODES_PATH = "partita_iva.json"; // Path to JSON file with codes
 const RESULTS_PATH = "results.json"; // Path to save the results
-const USERNAME = "Studiostaart"; // Replace with your username
-const PASSWORD = "3350Geometra28!"; // Replace with your password
-const SPREADSHEET_ID = "1Xf0yqjGSbdU-xbY2fKMGk8i9Of3naCHB740_CiCVAKk"; // Replace with your Spreadsheet ID
-const SHEET_NAME = "Sheet1"; // Replace with your sheet name if different
-
+const USERNAME = process.env.USERNAME; 
+const PASSWORD = process.env.PASSWORD; 
+const SPREADSHEET_ID = "1Xf0yqjGSbdU-xbY2fKMGk8i9Of3naCHB740_CiCVAKk"; 
+const SHEET_NAME = "Sheet1"; 
 
 // Delay helper function
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -458,6 +460,7 @@ async function processCodes(page, codes) {
           // Check for elements with 'classamento' including 'F'
           const hasF = await page.evaluate(() => {
             const items = document.querySelectorAll('[headers="classamento"]');
+            let number = 0;
             console.log(`Found classamento elements: ${items.length}`);
             if (items.length > 2) {
               for (let item of items) {
@@ -582,6 +585,7 @@ async function processCodes(page, codes) {
                   const hasFA = await page.evaluate(() => {
                     const items = document.querySelectorAll('[headers="classamento"]');
                     console.log(`Found 'classamento' elements: ${items.length}`);
+                    let number = 0;
                     if (items.length > 2) {
                       for (let item of items) {
                         console.log(`Checking element: ${item.innerText}`);
@@ -754,7 +758,7 @@ export async function loginToGeoweb() {
       // Click on the user collapse button as in your original code
       await page.click("#user-collapse .btn");
     }
-
+    results.push('0000');
     console.log("Process completed.");
     console.log("Results:", results);
 
