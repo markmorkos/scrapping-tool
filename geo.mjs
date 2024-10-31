@@ -351,7 +351,8 @@ async function processCodes(page, codes) {
   let results = [];
 
   for (const item of codes) {
-    const code = item.partitaIva; // Extract 'partitaIva' from JSON
+    const code = item.partitaIva;
+    const companyName = item.company;
     console.log(`Processing code: ${code}`);
 
     try {
@@ -480,7 +481,7 @@ async function processCodes(page, codes) {
 
           if (hasF) {
             console.log(`Adding code ${code} to results.`);
-            results.push(code);
+            results.push({ partitaIva: code, companyName });
           } else {
             console.log(`No matching elements found for code ${code}.`);
           }
@@ -604,7 +605,7 @@ async function processCodes(page, codes) {
           
                   if (hasFA) {
                     console.log(`Adding code ${code} to results.`);
-                    results.push(code);
+                    results.push({ partitaIva: code, companyName });
                     // Since we found a match, we can break out of both loops
                     j = omonimoNazionaleCount;
                     i = omonimoSelezionatoCount;
@@ -661,7 +662,8 @@ async function processCodes(page, codes) {
           
                 if (hasFA) {
                   console.log(`Adding code ${code} to results.`);
-                  results.push(code);
+                  
+                  results.push({ partitaIva: code, companyName });    
                   // Since we found a match, we can break out of the loop
                   i = omonimoSelezionatoCount;
                   break;

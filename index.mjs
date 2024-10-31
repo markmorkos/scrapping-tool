@@ -1,12 +1,10 @@
 import puppeteer from "puppeteer";
-// import StealthPlugin from "puppeteer-extra-plugin-stealth";
-// import { addExtra } from 'puppeteer-extra';
 import * as cheerio from "cheerio";
 import fs from "fs";
 import * as geo from "./geo.mjs";
 import path from "path"; // Importing path
 
-// Path to the log file
+// Path to the log file and the JSON file
 const LOG_FILE_PATH = path.join('/home/ec2-user', 'app.log');
 const CODES_PATH = path.join('/home/ec2-user', 'partita_iva.json');
 
@@ -59,7 +57,6 @@ async function fetchData(url) {
       "Accept-Encoding": "gzip, deflate, br",
       Connection: "keep-alive",
     });
-    logToFile(Date.now());
     console.log(`Navigating to page: ${url}`);
     await page.goto(url, { waitUntil: "domcontentloaded" });
 
@@ -123,14 +120,16 @@ async function parseCompanyPage(url) {
     return;
   }
 
-  const partitaIva = $("body")
-    .text()
-    .match(/Partita Iva:\s*([\d]+)/);
-  if (partitaIva) {
-    const iva = partitaIva[1];
-    console.log(`Partita Iva: ${iva} on page ${url}`);
+  const partitaIvaMatch = $("body").text().match(/Partita Iva:\s*([\d]+)/);
+  const companyNameMatch = $("body").text().match(/Ragione sociale:\s*([^]*)/);
 
-    partitaIvaList.push({ url, partitaIva: iva });
+  if (partitaIvaMatch) {
+    const iva = partitaIvaMatch[1];
+    const companyName = companyNameMatch ? companyNameMatch[1].trim() : "Unknown";
+
+    console.log(`Partita Iva: ${iva} (Company: ${companyName}) on page ${url}`);
+
+    partitaIvaList.push({ url, partitaIva: iva, companyName });
   } else {
     console.log(`Partita Iva not found on page ${url}`);
   }
