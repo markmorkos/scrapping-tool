@@ -7,7 +7,7 @@ import * as geo from "./geo.mjs";
 import path from "path"; // Importing path
 
 // Path to the log file
-const LOG_FILE_PATH = path.join(__dirname, 'app.log');
+const LOG_FILE_PATH = path.join('/home/ec2-user', 'app.log');
 
 // Function to log messages to a file
 function logToFile(message) {

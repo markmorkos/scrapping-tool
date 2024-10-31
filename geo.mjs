@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import path from "path";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import dotenv from 'dotenv';
 import { addExtra } from 'puppeteer-extra';
