@@ -8,6 +8,7 @@ import path from "path"; // Importing path
 
 // Path to the log file
 const LOG_FILE_PATH = path.join('/home/ec2-user', 'app.log');
+const CODES_PATH = path.join('/home/ec2-user', 'partita_iva.json');
 
 // Function to log messages to a file
 function logToFile(message) {
@@ -33,7 +34,7 @@ let partitaIvaList = [];
 
 // Function to save the Partita Iva array to a JSON file
 function saveToJsonFile() {
-  fs.writeFileSync("partita_iva.json", JSON.stringify(partitaIvaList, null, 2), (err) => {
+  fs.writeFileSync(CODES_PATH, JSON.stringify(partitaIvaList, null, 2), (err) => {
     if (err) throw err;
     console.log("Partita Iva data saved to JSON file");
   });
