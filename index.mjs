@@ -109,7 +109,6 @@ async function parseMainPage() {
 
   saveToJsonFile();
   geo.loginToGeoweb();
-  process.exit();
 }
 
 async function parseCompanyPage(url) {
