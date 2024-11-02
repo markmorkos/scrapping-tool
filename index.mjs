@@ -109,6 +109,7 @@ async function parseMainPage() {
 
   saveToJsonFile();
   geo.loginToGeoweb();
+  process.exit();
 }
 
 async function parseCompanyPage(url) {
@@ -133,4 +134,7 @@ async function parseCompanyPage(url) {
   }
 }
 
-parseMainPage();
+parseMainPage().catch(err => {
+  console.error("An error occurred in the main function:", err);
+  process.exit(1); 
+});

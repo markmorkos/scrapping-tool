@@ -789,10 +789,12 @@ export async function loginToGeoweb() {
     await page.click("#user-collapse .btn");
   } catch (error) {
     console.error("An error occurred during execution:", error);
+    process.exit();
   } finally {
     if (browser) {
       await page.click("#user-collapse .btn");
       await browser.close();
+      process.exit();
     }
   }
 }
